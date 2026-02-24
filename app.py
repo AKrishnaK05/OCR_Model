@@ -179,15 +179,23 @@ if uploaded_file:
                                 current_line.append(box)
                                 continue
                             
-                            # Check if this box belongs to the current line
-                            # Criterion: Vertical center is close to the line's running average center or last box
-                            last_box = current_line[-1]
+                            # Check if this box belongs to the current line using Vertical Overlap
+                            # Two boxes are on the same line if their vertical ranges overlap significantly
+                            b1 = current_line[-1]
+                            b2 = box
                             
-                            # If vertical distance is less than 70% of the box height -> Same line
-                            if abs(box['center_y'] - last_box['center_y']) < (box['height'] * 0.7):
+                            # Get Y-ranges (top to bottom)
+                            # res[0] is bbox: [tl, tr, br, bl]
+                            y1_min, y1_max = b1['res'][0][0][1], b1['res'][0][3][1]
+                            y2_min, y2_max = b2['res'][0][0][1], b2['res'][0][3][1]
+                            
+                            overlap = max(0, min(y1_max, y2_max) - max(y1_min, y2_min))
+                            h1, h2 = (y1_max - y1_min), (y2_max - y2_min)
+                            
+                            # If they overlap by more than 20% of the smaller box's height -> Same line
+                            if overlap > (min(h1, h2) * 0.2):
                                 current_line.append(box)
                             else:
-                                # End of line
                                 lines.append(current_line)
                                 current_line = [box]
                         
