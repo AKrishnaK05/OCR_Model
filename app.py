@@ -47,8 +47,8 @@ uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
 
 if uploaded_file:
     # Load and preprocess image
-    image = Image.open(uploaded_file)
-    img_array = np.array(image)
+    image = Image.open(uploaded_file).convert("RGB")
+    img_array = np.array(image, dtype=np.uint8)
     
     # Preprocessing Chain
     processed_img = img_array.copy()
@@ -62,12 +62,6 @@ if uploaded_file:
         if len(processed_img.shape) == 3:
             processed_img = cv2.cvtColor(processed_img, cv2.COLOR_RGB2GRAY)
     
-    # Check grayscale again for single channel ops if grayscale wasn't selected but image is color
-    # Some ops below need grayscale.
-    gray_for_ops = processed_img
-    if len(processed_img.shape) == 3:
-        gray_for_ops = cv2.cvtColor(processed_img, cv2.COLOR_RGB2GRAY)
-            
     # 3. Denoising
     if use_denoising:
         # fastNlMeansDenoising is good but slow. simple medianBlur is faster.
