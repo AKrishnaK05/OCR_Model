@@ -179,21 +179,16 @@ if uploaded_file:
                                 current_line.append(box)
                                 continue
                             
-                            # Check if this box belongs to the current line using Vertical Overlap
-                            # Two boxes are on the same line if their vertical ranges overlap significantly
-                            b1 = current_line[-1]
-                            b2 = box
+                            # Extremely robust grouping:
+                            # Use the average height of the current line to determine a grouping threshold
+                            line_heights = [b['height'] for b in current_line]
+                            avg_height = sum(line_heights) / len(line_heights)
                             
-                            # Get Y-ranges (top to bottom)
-                            # res[0] is bbox: [tl, tr, br, bl]
-                            y1_min, y1_max = b1['res'][0][0][1], b1['res'][0][3][1]
-                            y2_min, y2_max = b2['res'][0][0][1], b2['res'][0][3][1]
+                            # Group if the new box's center is within 70% of a line height from the previous box's center
+                            last_box = current_line[-1]
+                            y_dist = abs(box['center_y'] - last_box['center_y'])
                             
-                            overlap = max(0, min(y1_max, y2_max) - max(y1_min, y2_min))
-                            h1, h2 = (y1_max - y1_min), (y2_max - y2_min)
-                            
-                            # If they overlap by more than 20% of the smaller box's height -> Same line
-                            if overlap > (min(h1, h2) * 0.2):
+                            if y_dist < (avg_height * 0.7):
                                 current_line.append(box)
                             else:
                                 lines.append(current_line)
