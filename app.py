@@ -35,6 +35,11 @@ if threshold_type == "Simple Binary":
 
 use_dilation = st.sidebar.checkbox("Apply Dilation (Thicken Text)", value=False)
 
+st.sidebar.subheader("Advanced Accuracy")
+use_clahe = st.sidebar.checkbox("Use CLAHE (Auto-Contrast)", value=False)
+use_deskew = st.sidebar.checkbox("Auto-Deskew (Fix Rotation)", value=False)
+use_sharpen = st.sidebar.checkbox("Apply Sharpening Filter", value=False)
+
 st.sidebar.subheader("OCR Settings")
 use_paragraph = st.sidebar.checkbox("Paragraph Mode (Groups Text)", value=False)
 
@@ -83,6 +88,42 @@ if uploaded_file:
     if use_dilation:
         kernel = np.ones((2,2), np.uint8)
         processed_img = cv2.dilate(processed_img, kernel, iterations=1)
+
+    # 6. CLAHE (Contrast Limited Adaptive Histogram Equalization)
+    if use_clahe:
+        # Convert to grayscale if not already
+        if len(processed_img.shape) == 3:
+            processed_img = cv2.cvtColor(processed_img, cv2.COLOR_RGB2GRAY)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+        processed_img = clahe.apply(processed_img)
+
+    # 7. Auto-Deskew
+    if use_deskew:
+        if len(processed_img.shape) == 3:
+            gray_skew = cv2.cvtColor(processed_img, cv2.COLOR_RGB2GRAY)
+        else:
+            gray_skew = processed_img
+        
+        # Binary threshold for contour detection
+        _, thresh = cv2.threshold(gray_skew, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        coords = np.column_stack(np.where(thresh > 0))
+        angle = cv2.minAreaRect(coords)[-1]
+        
+        # Adjust angle logic
+        if angle < -45:
+            angle = -(90 + angle)
+        else:
+            angle = -angle
+            
+        (h, w) = processed_img.shape[:2]
+        center = (w // 2, h // 2)
+        M = cv2.getRotationMatrix2D(center, angle, 1.0)
+        processed_img = cv2.warpAffine(processed_img, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+
+    # 8. Sharpening
+    if use_sharpen:
+        kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+        processed_img = cv2.filter2D(processed_img, -1, kernel)
 
     # Visualization
     col1, col2 = st.columns(2)
