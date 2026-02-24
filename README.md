@@ -73,5 +73,3 @@ The platform follows a sophisticated **Vision Pipeline**:
    ```
 
 ---
-
-Built for **LPU PEP** | Empowering Vision Intelligence.
