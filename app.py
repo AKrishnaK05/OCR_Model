@@ -183,8 +183,8 @@ if uploaded_file:
                             # Criterion: Vertical center is close to the line's running average center or last box
                             last_box = current_line[-1]
                             
-                            # If vertical distance is less than half the height of the current text -> Same line
-                            if abs(box['center_y'] - last_box['center_y']) < (box['height'] * 0.5):
+                            # If vertical distance is less than 70% of the box height -> Same line
+                            if abs(box['center_y'] - last_box['center_y']) < (box['height'] * 0.7):
                                 current_line.append(box)
                             else:
                                 # End of line
@@ -219,8 +219,8 @@ if uploaded_file:
 
                     else:
                         results = reader.readtext(processed_img)
-                        # Standard Sort (Top-Down roughly)
-                        results.sort(key=lambda r: (int(r[0][0][1] / 10), r[0][0][0]))
+                        # Standard Sort (Top-Down with 30px leeway)
+                        results.sort(key=lambda r: (int(r[0][0][1] / 30), r[0][0][0]))
                         
                         extracted_text_list = [text for (_, text, _) in results]
                         annotated_img = np.array(image)
