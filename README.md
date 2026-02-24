@@ -1,18 +1,21 @@
 # Advanced Image to Text OCR Model
 
-A powerful, Streamlit-based Web Application for Optical Character Recognition (OCR) built with EasyOCR and OpenCV. This tool allows users to upload images, apply advanced preprocessing filters, and extract text in multiple languages.
+A powerful, Streamlit-based Web Application for Optical Character Recognition (OCR) built with EasyOCR and OpenCV.
+
+## 🔗 Live Demo
+**Access the app here: [ocrmodel-dh22ahgtyxqhesfhkvzhqp.streamlit.app](https://ocrmodel-dh22ahgtyxqhesfhkvzhqp.streamlit.app/)**
 
 ## 🚀 Features
 
 - **Multi-language Support**: Extract text in English, Hindi, French, Spanish, and German.
-- **Advanced Preprocessing**:
-  - **Rescaling**: Upscale images for better detection of small text.
-  - **Denoising**: Remove noise for clearer character recognition.
-  - **Thresholding**: Simple Binary and Adaptive Gaussian methods for better contrast.
-  - **Dilation**: Thicken text to improve OCR accuracy.
-- **Layout Analysis**: Custom logic to sort detected text boxes into a natural reading order (Paragraph Mode).
-- **Visualization**: Side-by-side comparison of processed images and annotated detection results.
-- **Export**: Download extracted text as a `.txt` file.
+- **Advanced Accuracy Suite**:
+  - **Auto-Deskew**: Automatically fix image rotation.
+  - **CLAHE**: Intelligent contrast enhancement for better results in poor lighting.
+  - **Sharpening**: Enhance character edges for clearer recognition.
+  - **Rescaling**: Upscale small text.
+- **Layout Analysis**: Smart Paragraph Mode to preserve natural reading order.
+- **Visualization**: Comparison view of processed images vs. annotated results.
+- **Export**: Download results as a `.txt` file.
 
 ## 🛠️ Tech Stack
 
@@ -50,5 +53,3 @@ A powerful, Streamlit-based Web Application for Optical Character Recognition (O
 This app is ready to be deployed on **Streamlit Cloud** or **Hugging Face Spaces**. Make sure to include the `requirements.txt` file in your repository.
 
 ---
-
-Built with ❤️ for LPU PEP.
